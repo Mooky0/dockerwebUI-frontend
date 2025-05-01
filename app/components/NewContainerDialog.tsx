@@ -53,6 +53,7 @@ const NewContainerDialog: React.FC<NewContainerDialogProps> = ({
   const isFormValid = containerName.trim() !== "" && image.trim() !== "";
 
   const handlePortChange = (index: number, field: string, value: string) => {
+    console.log("Port changed", index, field, value);
     setPorts((prevPorts) =>
       prevPorts.map((port, i) =>
         i === index ? { ...port, [field]: value } : port
@@ -65,9 +66,13 @@ const NewContainerDialog: React.FC<NewContainerDialogProps> = ({
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
     // Trim values locally
+    console.log("Form submitted");
+    console.log("Container Name:", containerName);
+    console.log("Image:", image);
+    console.log("Ports:", ports);
+    console.log("Command:", command);
+    console.log("Auto Remove:", autoRemove);
     const trimmedContainerName = containerName.trim();
     const trimmedImage = image.trim();
     const trimmedCommand = command.trim();
@@ -84,6 +89,8 @@ const NewContainerDialog: React.FC<NewContainerDialogProps> = ({
         command: trimmedCommand,
         autoRemove,
       };
+
+      console.log("Form Data:", formData);
 
       createContainer(formData)
         .then(() => {
@@ -104,123 +111,121 @@ const NewContainerDialog: React.FC<NewContainerDialogProps> = ({
   return (
     <>
       <DialogTitle>Create New Container</DialogTitle>
-      <form autoComplete="off" onSubmit={handleFormSubmit}>
-        <DialogContent>
+      <DialogContent>
+        <TextField
+          required
+          autoFocus
+          margin="dense"
+          label="Container Name"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={containerName}
+          onChange={(e) => setContainerName(e.target.value)}
+        />
+        <Box display="flex" alignItems="center" marginTop={2}>
+          <div>docker.io/</div>
           <TextField
+            sx={{ pl: 1 }}
+            margin="dense"
+            label="Image"
+            type="text"
+            fullWidth
+            variant="outlined"
             required
-            autoFocus
-            margin="dense"
-            label="Container Name"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={containerName}
-            onChange={(e) => setContainerName(e.target.value)}
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
           />
-          <Box display="flex" alignItems="center" marginTop={2}>
-            <div>docker.io/</div>
-            <TextField
-              sx={{ pl: 1 }}
-              margin="dense"
-              label="Image"
-              type="text"
-              fullWidth
-              variant="outlined"
-              required
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-            />
-          </Box>
-          <TextField
-            margin="dense"
-            label="Command"
-            type="text"
-            fullWidth
+        </Box>
+        <TextField
+          margin="dense"
+          label="Command"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={command}
+          onChange={(e) => setCommand(e.target.value)}
+        />
+        <Box
+          display="flex"
+          alignItems="center"
+          marginTop={2}
+          sx={{ mb: 1, mt: 1 }}
+        >
+          <div>Ports</div>
+          <Button
             variant="outlined"
-            value={command}
-            onChange={(e) => setCommand(e.target.value)}
-          />
-          <Box
-            display="flex"
-            alignItems="center"
-            marginTop={2}
-            sx={{ mb: 1, mt: 1 }}
+            color="primary"
+            sx={{ ml: 2 }}
+            onClick={() => {
+              setPorts((prevPorts) => [
+                ...prevPorts,
+                { hostPort: "", containerPort: "" },
+              ]);
+            }}
           >
-            <div>Ports</div>
+            Add Port
+          </Button>
+        </Box>
+        {ports.map((port, index) => (
+          <Box key={index} display="flex" alignItems="center">
+            <FormControl fullWidth sx={{ pr: 1 }} variant="outlined">
+              <TextField
+                margin="dense"
+                label="Host Port"
+                type="text"
+                variant="outlined"
+                value={port.hostPort}
+                onChange={(e) =>
+                  handlePortChange(index, "hostPort", e.target.value)
+                }
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ pl: 1 }} variant="outlined">
+              <TextField
+                margin="dense"
+                label="Container Port"
+                type="text"
+                variant="outlined"
+                value={port.containerPort}
+                onChange={(e) =>
+                  handlePortChange(index, "containerPort", e.target.value)
+                }
+              />
+            </FormControl>
             <Button
               variant="outlined"
-              color="primary"
-              sx={{ ml: 2 }}
-              onClick={() => {
-                setPorts((prevPorts) => [
-                  ...prevPorts,
-                  { hostPort: "", containerPort: "" },
-                ]);
-              }}
+              color="secondary"
+              sx={{ ml: 1 }}
+              onClick={() => handlePortRemove(index)}
             >
-              Add Port
+              Remove
             </Button>
           </Box>
-          {ports.map((port, index) => (
-            <Box key={index} display="flex" alignItems="center">
-              <FormControl fullWidth sx={{ pr: 1 }} variant="outlined">
-                <TextField
-                  margin="dense"
-                  label="Host Port"
-                  type="text"
-                  variant="outlined"
-                  value={port.hostPort}
-                  onChange={(e) =>
-                    handlePortChange(index, "hostPort", e.target.value)
-                  }
-                />
-              </FormControl>
-              <FormControl fullWidth sx={{ pl: 1 }} variant="outlined">
-                <TextField
-                  margin="dense"
-                  label="Container Port"
-                  type="text"
-                  variant="outlined"
-                  value={port.containerPort}
-                  onChange={(e) =>
-                    handlePortChange(index, "containerPort", e.target.value)
-                  }
-                />
-              </FormControl>
-              <Button
-                variant="outlined"
-                color="secondary"
-                sx={{ ml: 1 }}
-                onClick={() => handlePortRemove(index)}
-              >
-                Remove
-              </Button>
-            </Box>
-          ))}
-          <Box display="flex" alignItems="center" marginTop={2}>
-            <Checkbox
-              sx={{ mt: 0 }}
-              color="primary"
-              checked={autoRemove}
-              onChange={(e) => setAutoRemove(e.target.checked)}
-            />
-            <span>Autoremove</span>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleFormSubmit}
+        ))}
+        <Box display="flex" alignItems="center" marginTop={2}>
+          <Checkbox
+            sx={{ mt: 0 }}
             color="primary"
-            type="submit"
-            disabled={!isFormValid}
-          >
-            Submit
-          </Button>
-        </DialogActions>
-      </form>
+            checked={autoRemove}
+            onChange={(e) => setAutoRemove(e.target.checked)}
+          />
+          <span>Autoremove</span>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="secondary">
+          Cancel
+        </Button>
+        <Button
+          onClick={handleFormSubmit}
+          color="primary"
+          type="submit"
+          disabled={!isFormValid}
+        >
+          Submit
+        </Button>
+      </DialogActions>
     </>
   );
 };

@@ -15,18 +15,19 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useEffect, useState } from "react";
-import { getContainerData } from "../../api/containerService";
 import { DockerContainer, DockerContainerList } from "../../types/container";
 import { Button } from "@mui/material";
 import {
+  getContainerData,
+  unpauseContainer,
   pauseContainer,
   startContainer,
   stopContainer,
   restartContainer,
   deleteContainer,
-  unpauseContainer,
+  killContainer,
 } from "../../api/containerService";
-import { start } from "repl";
+import { kill } from "process";
 
 function Row(props: { row: DockerContainer }) {
   const { row } = props;
@@ -139,20 +140,34 @@ function Row(props: { row: DockerContainer }) {
                       </Button>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => pauseContainer(row.Id)}
-                        disabled={!running || paused || dead}
-                      >
-                        Pause
-                      </Button>
+                      {!paused && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => pauseContainer(row.Id)}
+                          //disabled={!running || paused || dead}
+                          disabled={row.State.Status == "exited"}
+                        >
+                          Pause
+                        </Button>
+                      )}
+                      {paused && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => unpauseContainer(row.Id)}
+                          //disabled={!running || paused || dead}
+                          disabled={row.State.Status == "exited"}
+                        >
+                          Unpause
+                        </Button>
+                      )}
                     </TableCell>
                     <TableCell component="th" scope="row">
                       <Button
                         variant="contained"
                         color="error"
-                        onClick={() => console.log("Kill")}
+                        onClick={() => killContainer(row.Id)}
                         disabled={!running || dead}
                       >
                         Kill
