@@ -11,3 +11,18 @@ export async function getImageData(): Promise<DockerImageList> {
 
   return response.json();
 }
+
+export async function deleteImage(imageId: string): Promise<void> {
+  const response = await fetch(`http://localhost:3300/images/`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ imageId }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete image");
+  }
+  window.location.reload();
+}

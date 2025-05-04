@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useEffect, useState } from "react";
-import { getImageData } from "@/api/imageService";
+import { getImageData, deleteImage } from "@/api/imageService";
 import Paper from "@mui/material/Paper";
 import { Collapse, Button } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -86,7 +86,7 @@ function Row(props: { row: DockerImage }) {
             aria-label="delete"
             size="small"
             onClick={() => {
-              console.log("Delte iamge", row.Id);
+              deleteImage(row.Id);
             }}
           >
             <DeleteIcon />

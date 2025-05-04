@@ -66,7 +66,7 @@ function Row(props: { row: DockerVolume }) {
   );
 }
 
-export default function ImagesTable() {
+export default function VolumeTable() {
   const [rows, setRows] = useState<DockerVolumeList>([]);
   const [error, setError] = useState<string | null>(null);
 

@@ -18,3 +18,11 @@ export interface DockerVolume {
 }
 
 export type DockerVolumeList = DockerVolume[];
+
+export interface VolumeCreateOptions {
+  Name?: string | undefined;
+  Driver?: string | undefined;
+  DriverOpts?: { [key: string]: string } | undefined;
+  Labels?: { [label: string]: string } | undefined;
+  abortSignal?: AbortSignal;
+}
