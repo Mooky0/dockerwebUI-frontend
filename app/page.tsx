@@ -1,6 +1,3 @@
-import Link from "next/link";
-import ProductCard from "./components/ProductCard";
-import Button from "@mui/material/Button";
 import { DockerDashboardInfo } from "@/types/docker";
 import DockerDashboard from "@/app/components/DockerDashboard";
 

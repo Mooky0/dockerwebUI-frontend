@@ -27,7 +27,6 @@ import {
   deleteContainer,
   killContainer,
 } from "../../api/containerService";
-import { kill } from "process";
 
 function Row(props: { row: DockerContainer }) {
   const { row } = props;
